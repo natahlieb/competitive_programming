@@ -1,19 +1,27 @@
 __author__ = 'natahlie'
 import numpy as np
 import sys
+import collections
+from heapq import heappush, heappop
+import Queue
 
-def find_shortest_distance(dist, visited_set, n):
+
+
+def find_shortest_distance(dist, unprocessed_nodes, n):
+    print dist
     shortest_distance = sys.maxint
     count = 0
     shortest_distance_node = -1
 
     while(count < n):
-        if visited_set[count]== False & dist[count] <= shortest_distance:
-            shortest_distance = dist[count]
-            shortest_distance_node = count
+        if unprocessed_nodes[count]== 0:
+            if dist[count+1] < shortest_distance:
+                shortest_distance = dist[count]
+                shortest_distance_node = count
 
         count +=1
 
+    print shortest_distance_node
     return shortest_distance_node
 
 
@@ -21,48 +29,68 @@ def find_shortest_distance(dist, visited_set, n):
 #construct our adjacency matrix
 first_line = raw_input().split(" ")
 n = int(first_line[0])
+adj_list = collections.defaultdict(dict)
+
 m = int(first_line[1])
-print n
-adj_matrix = np.empty((n, n))
-adj_matrix.fill(sys.maxint)
-print adj_matrix
 
 i = 0
 while i != m:
     temp_input = raw_input().split(" ")
-    adj_matrix[int(temp_input[0])-1, int(temp_input[1])-1] = int(temp_input[2])
-    adj_matrix[int(temp_input[1])-1, int(temp_input[0])-1] = int(temp_input[2])
+    adj_list[int(temp_input[0])][int(temp_input[1])] = int(temp_input[2])
+    adj_list[int(temp_input[1])][int(temp_input[0])] = int(temp_input[2])
     i+=1
 
-origin = 0
-goal = n-1
+print adj_list
 
-dist = np.empty(n)
-shortest_set = np.empty(n)
-count = 0
+dist = [None] * n
+processed = []
+unprocessed = []
+parent = [None] * n
 
-while(count < n):
-    dist[count] =  sys.maxint
-    shortest_set = 'FALSE'
-    count+=1
-
-dist[origin] =0
-
-i = 0
-
-while(i < n):
-    #find min distance vertex from those not yet processed
-    min_node = find_shortest_distance(dist, shortest_set,n)
-    shortest_set[min_node] = True
-    j = 0
-    while(j < n):
-        if(shortest_set[j]==False & adj_matrix[min_node][j])!=sys.maxint & dist[min_node]+adj_matrix[min_node][j] < dist[i]:
-            dist[i] = dist[min_node] + adj_matrix[i][j]
-        j += 1
-
-    i += 1
-
-i = 0
-for i< n:
-    print "Vertex: " + str(i+1) + " Distance from source: " + str(dist[i])
+i = 1
+while i <= n:
+    dist[i-1] = sys.maxint
+    parent[i-1] = None
+    unprocessed.append(i)
     i+=1
+
+
+dist[0] = 0
+
+print unprocessed
+while len(processed)!=n:
+    #find node with the smallest length
+    min_node = find_shortest_distance(dist, unprocessed, n)
+    if min_node == n:
+        break
+    processed.append(min_node)
+    unprocessed.remove(min_node)
+
+    for j in unprocessed:
+        if dist[min_node] + adj_list[min_node][j] < dist[j]:
+            dist[j] = dist[min_node] + adj_list[min_node[j]]
+            parent[j] = min_node
+
+
+print dist[n]
+
+
+
+
+'''
+origin_node = 1
+A = [None] * n
+queue = [(0, origin_node)]
+
+while queue:
+    path_len, v = heappop(queue)
+    if A[v] is None:
+        A[v] = path_len
+        for w in adj_list[v]:
+            if A[w-1] is None:
+                edge_len = adj_list[v][w]
+                heappush(queue, (path_len + edge_len, w))
+
+
+print [0 if x is None else x for x in A]
+'''
