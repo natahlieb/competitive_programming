@@ -1,3 +1,12 @@
+'''
+goal of this program was to take in some sort of string input, return it's 
+numerical position in a dictionary (ex) aaaa would probably be position 1, it's the first item in the dictionary
+
+'''
+
+
+
+
 __author__ = 'natahlie_beavers'
 import math
 
@@ -21,8 +30,6 @@ while original_word_position_examined != (word_length-1):
         #characters that have not been examined yet in the sorted list of characters from our original word
         characters_remaining = len(sorted_word) - 1
 
-        #iterate through our list of sorted characters,
-        #try to see how many occur in the alphabet before the character we're currently examining from the original word
         i = 0
         while(sorted_word[i]!= word[original_word_position_examined]):
             greater_than_first+=1
@@ -42,8 +49,6 @@ while original_word_position_examined != (word_length-1):
         #add to our previosly calculated position for our input word
         position += (greater_than_first * math.factorial(characters_remaining))/divisor
 
-        #on next iteration, see how many characters in our sorted list occur alphabetically before the next character in our input word
-        #remove the character from the original word that we just examined from our sorted list- we've already considered what characters may have come before it alphabetically
         original_word_position_examined +=1
         sorted_word = sorted(word[original_word_position_examined:word_length])
 
